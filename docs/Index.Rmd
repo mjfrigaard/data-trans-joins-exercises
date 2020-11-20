@@ -1,0 +1,61 @@
+---
+title: "BioMarin Meetup: reshaping, transforming, and joining data in R (exercises)"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+    highlight: tango
+    theme: lumen
+    df_print: paged
+    
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(skimr)
+# create data folder
+knitr::opts_chunk$set(warning = FALSE, 
+                      message = FALSE,
+                      tidy = FALSE)
+```
+
+# Objectives 
+
+This document outlines some common data reshaping tasks with `tidyr`. 
+
+The slides for this presentation are [here](https://mjfrigaard.github.io/data-transformations-joins/Index.html#1)
+
+There is also an accompanying RStudio.Cloud project 
+
+
+
+Read more about `dplyr` [here](https://dplyr.tidyverse.org/index.html) and [`tidyr`]() on the tidyverse website, or in the [Data Transformation](https://r4ds.had.co.nz/transform.html) chapter of R for Data Science. 
+
+## Load packages 
+
+`tidyr` is part of the core `tidyverse` packages, so we install and load this meta-package below. 
+
+```{r packages, eval=FALSE}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+
+## Manging data {.tabset}
+
+We're going to use some of the `fs` package functions for managing our files and data. 
+
+### Create folders  
+
+```{r fs-fir-info}
+# fs::dir_create("")
+```
+
+### Folder trees 
+
+
+### File paths
+
+## 
