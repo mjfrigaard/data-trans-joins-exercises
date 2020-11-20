@@ -3009,10 +3009,9 @@ div.tocify {
 
 <div id="objectives" class="section level1">
 <h1>Objectives</h1>
-<p>This document outlines some common data reshaping tasks with <code>tidyr</code>.</p>
-<p>The slides for this presentation are <a href="https://mjfrigaard.github.io/data-transformations-joins/Index.html#1">here</a></p>
-<p>There is also an accompanying RStudio.Cloud project</p>
-<p>Read more about <code>dplyr</code> <a href="https://dplyr.tidyverse.org/index.html">here</a> and <a href><code>tidyr</code></a> on the tidyverse website, or in the <a href="https://r4ds.had.co.nz/transform.html">Data Transformation</a> chapter of R for Data Science.</p>
+<p>This document outlines some common data reshaping tasks with <code>tidyr</code>. The slides for this presentation are <a href="https://mjfrigaard.github.io/data-transformations-joins/Index.html#1">here</a></p>
+<p>There is also an accompanying RStudio.Cloud project:</p>
+<p>Read more about <code>dplyr</code> <a href="https://dplyr.tidyverse.org/index.html">here</a> and <a href="https://tidyr.tidyverse.org/"><code>tidyr</code></a> on the tidyverse website, or in the <a href="https://r4ds.had.co.nz/transform.html">Data Transformation</a> chapter of R for Data Science.</p>
 <div id="load-packages" class="section level2">
 <h2>Load packages</h2>
 <p><code>tidyr</code> is part of the core <code>tidyverse</code> packages, so we install and load this meta-package below.</p>
@@ -3024,71 +3023,231 @@ div.tocify {
 <p>We’re going to use some of the <code>fs</code> package functions for managing our files and data.</p>
 <div id="folder-trees-and-paths" class="section level3">
 <h3>Folder trees and paths</h3>
-<p>Check your files and folders with <code>dir_tree</code>:</p>
+<p>Check your files and folders with <code>dir_tree</code> or <code>dir_ls</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;..&quot;</span>)</span></code></pre></div>
 <pre><code>## ..
 ## ├── data-trans-joins-exercises.Rproj
 ## └── docs
 ##     ├── Index.Rmd
-##     └── Index.html</code></pre>
+##     ├── Index.html
+##     ├── code
+##     │   └── 01-create-usada-data.R
+##     └── data
+##         ├── LabData.csv
+##         ├── LabProc.csv
+##         ├── SmallLabData.csv
+##         ├── UsadaBadDates.csv
+##         └── UsadaRaw.csv</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_ls</span>(<span class="st">&quot;..&quot;</span>, <span class="at">recurse =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## ../data-trans-joins-exercises.Rproj ../docs                             
+## ../docs/Index.Rmd                   ../docs/Index.html                  
+## ../docs/code                        ../docs/code/01-create-usada-data.R 
+## ../docs/data                        ../docs/data/LabData.csv            
+## ../docs/data/LabProc.csv            ../docs/data/SmallLabData.csv       
+## ../docs/data/UsadaBadDates.csv      ../docs/data/UsadaRaw.csv</code></pre>
 </div>
-<div id="create-folders" class="section level3">
-<h3>Create folders</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="st">&quot;data&quot;</span>)</span></code></pre></div>
+<div id="metadata" class="section level3">
+<h3>Metadata</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_info</span>(<span class="st">&quot;data&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(modification_time))</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["path"],"name":[1],"type":["fs_path"],"align":["right"]},{"label":["type"],"name":[2],"type":["fct"],"align":["left"]},{"label":["size"],"name":[3],"type":["fs_bytes"],"align":["right"]},{"label":["permissions"],"name":[4],"type":["fs_perms"],"align":["right"]},{"label":["modification_time"],"name":[5],"type":["dttm"],"align":["right"]},{"label":["user"],"name":[6],"type":["chr"],"align":["left"]},{"label":["group"],"name":[7],"type":["chr"],"align":["left"]},{"label":["device_id"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["hard_links"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["special_device_id"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["inode"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["block_size"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["blocks"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["flags"],"name":[14],"type":["int"],"align":["right"]},{"label":["generation"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["access_time"],"name":[16],"type":["dttm"],"align":["right"]},{"label":["change_time"],"name":[17],"type":["dttm"],"align":["right"]},{"label":["birth_time"],"name":[18],"type":["dttm"],"align":["right"]}],"data":[{"1":"data/UsadaBadDates.csv","2":"file","3":"3.13K","4":"rw-rw-rw-","5":"2020-11-20 09:04:03","6":"mjfrigaard","7":"staff","8":"16777223","9":"1","10":"0","11":"12934051131","12":"4096","13":"8","14":"0","15":"0","16":"2020-11-20 09:04:05","17":"2020-11-20 09:04:03","18":"2020-11-20 09:04:03"},{"1":"data/UsadaRaw.csv","2":"file","3":"81.61K","4":"rw-rw-rw-","5":"2020-11-20 09:04:03","6":"mjfrigaard","7":"staff","8":"16777223","9":"1","10":"0","11":"12934050995","12":"4096","13":"256","14":"0","15":"0","16":"2020-11-20 09:04:05","17":"2020-11-20 09:04:03","18":"2020-11-20 09:03:06"},{"1":"data/LabProc.csv","2":"file","3":"164","4":"rw-rw-rw-","5":"2020-11-20 08:19:03","6":"mjfrigaard","7":"staff","8":"16777223","9":"1","10":"0","11":"12934044652","12":"4096","13":"8","14":"0","15":"0","16":"2020-11-20 09:04:49","17":"2020-11-20 08:19:03","18":"2020-11-20 08:13:56"},{"1":"data/SmallLabData.csv","2":"file","3":"93","4":"rw-rw-rw-","5":"2020-11-20 07:58:48","6":"mjfrigaard","7":"staff","8":"16777223","9":"1","10":"0","11":"12934035994","12":"4096","13":"8","14":"0","15":"0","16":"2020-11-20 09:04:49","17":"2020-11-20 07:58:48","18":"2020-11-20 07:56:48"},{"1":"data/LabData.csv","2":"file","3":"139","4":"rw-rw-rw-","5":"2020-11-20 07:50:05","6":"mjfrigaard","7":"staff","8":"16777223","9":"1","10":"0","11":"12934035102","12":"4096","13":"8","14":"0","15":"0","16":"2020-11-20 09:04:49","17":"2020-11-20 07:50:05","18":"2020-11-20 07:50:05"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
 </div>
-<div id="folder-trees" class="section level3">
-<h3>Folder trees</h3>
-</div>
-<div id="file-paths" class="section level3">
-<h3>File paths</h3>
 </div>
 </div>
 <div id="separate" class="section level2 tabset">
 <h2 class="tabset"><code>separate()</code></h2>
+<p>This allows us to split columns apart into multiple variables.</p>
 <div id="separate-exercise-1" class="section level3">
 <h3><code>separate</code> exercise 1</h3>
+<p>Take a look at <code>SmallLabData</code> below. Separate <code>ref</code> into <code>ref_value</code> and <code>ref_units</code></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>SmallLabData <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/SmallLabData.csv&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>SmallLabData</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lab"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ref"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"Albumin","2":"3.4-5.4 g/dL"},{"1":"Potassium, Whole Blood","2":"6.5-7.0 mmol/L"},{"1":"% Hemoglobin A1c","2":"6.50 %"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>SmallLabData <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(<span class="at">col =</span> ___, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">&quot;_______&quot;</span>, <span class="st">&quot;_______&quot;</span>), <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)</span></code></pre></div>
 </div>
 <div id="separate-solution-1" class="section level3">
 <h3><code>separate</code> solution 1</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>SmallLabData <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(<span class="at">col =</span> ref, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">&quot;ref_value&quot;</span>, <span class="st">&quot;ref_units&quot;</span>), <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lab"],"name":[1],"type":["chr"],"align":["left"]},{"label":["ref_value"],"name":[2],"type":["chr"],"align":["left"]},{"label":["ref_units"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"Albumin","2":"3.4-5.4","3":"g/dL"},{"1":"Potassium, Whole Blood","2":"6.5-7.0","3":"mmol/L"},{"1":"% Hemoglobin A1c","2":"6.50","3":"%"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 </div>
 <div id="separate_rows" class="section level2 tabset">
 <h2 class="tabset"><code>separate_rows</code></h2>
+<p><code>separate_rows()</code> is similar to <code>separate()</code>, but drops the values down the rows. This is commonly used when we have more than one value in each column.</p>
 <div id="separate_rows-exercise-1" class="section level3">
 <h3><code>separate_rows</code> exercise 1</h3>
+<p>Take a look at <code>LabData</code> below. Put all the <code>value</code>s into their own cell, and make sure the new variable is numeric.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>LabData <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/LabData.csv&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>LabData</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lab"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["chr"],"align":["left"]},{"label":["ref"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"Albumin","2":"3.5, 4.2, 5.0","3":"3.4 - 5.4 g/dL"},{"1":"Potassium, Whole Blood","2":"1.7, 4.3","3":">6.5-7.0 mmol/L"},{"1":"% Hemoglobin A1c","2":"4.1, 4.8","3":"6.50%"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>LabData <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_rows</span>(_____, <span class="at">sep =</span> _____, <span class="at">convert =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="separate_rows-solution-1" class="section level3">
 <h3><code>separate_rows</code> solution 1</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>LabData <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_rows</span>(value, <span class="at">sep =</span> <span class="st">&quot;, &quot;</span>, <span class="at">convert =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lab"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["ref"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"Albumin","2":"3.5","3":"3.4 - 5.4 g/dL"},{"1":"Albumin","2":"4.2","3":"3.4 - 5.4 g/dL"},{"1":"Albumin","2":"5.0","3":"3.4 - 5.4 g/dL"},{"1":"Potassium, Whole Blood","2":"1.7","3":">6.5-7.0 mmol/L"},{"1":"Potassium, Whole Blood","2":"4.3","3":">6.5-7.0 mmol/L"},{"1":"% Hemoglobin A1c","2":"4.1","3":"6.50%"},{"1":"% Hemoglobin A1c","2":"4.8","3":"6.50%"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 </div>
 <div id="unite" class="section level2 tabset">
 <h2 class="tabset"><code>unite()</code></h2>
+<p>Just like <code>separate</code>/<code>separate_rows</code> allows us to split up columns, <code>unite()</code> lets us stick them back together!</p>
 <div id="unite-exercise-1" class="section level3">
 <h3><code>unite</code> exercise 1</h3>
+<p>Take a look at <code>LabProc</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>LabProc <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/LabProc.csv&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>LabProc</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["visit"],"name":[1],"type":["date"],"align":["right"]},{"label":["lab_proc"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"2020-10-01","2":"Albumin 3.4 g/dL; Potassium 3.8 mmol/L; A1c 4.8 %"},{"1":"2020-10-10","2":"Albumin 41 g/dL; A1c 5.0 %"},{"1":"2020-10-20","2":"Albumin 4.8 g/dL; Potassium 2.2 mmol/L"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Separate the labs from each other down the rows.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>LabProc <span class="sc">%&gt;%</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate_rows</span>(lab_proc, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>)</span></code></pre></div>
+<p>Separate <code>lab</code>, <code>value</code>, and <code>units</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>LabProc <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate_rows</span>(lab_proc, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(<span class="at">col =</span> lab_proc,<span class="at">into =</span> <span class="fu">c</span>(<span class="st">&#39;__&#39;</span>, <span class="st">&#39;_____&#39;</span>, <span class="st">&#39;_____&#39;</span>), </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">sep =</span> <span class="st">&quot; &quot;</span>, <span class="at">convert =</span> ____)</span></code></pre></div>
+<p>Unite <code>lab</code>, <code>value</code> and <code>units</code> into <code>lab_name</code> (don’t remove the previous columns with <code>remove = FALSE</code>)</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>LabProc <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate_rows</span>(lab_proc, <span class="at">sep =</span> <span class="st">&quot;___&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">separate</span>(<span class="at">col =</span> lab_proc,<span class="at">into =</span> <span class="fu">c</span>(<span class="st">&#39;__&#39;</span>, <span class="st">&#39;_____&#39;</span>, <span class="st">&#39;_____&#39;</span>), </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">sep =</span> <span class="st">&quot; &quot;</span>, <span class="at">convert =</span> ____)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unite</span>(<span class="at">col =</span> <span class="st">&quot;_______&quot;</span>, lab<span class="sc">:</span>units, <span class="at">sep =</span> <span class="st">&quot; &quot;</span>, <span class="at">remove =</span> _____)</span></code></pre></div>
 </div>
 <div id="unite-solution-1" class="section level3">
 <h3><code>unite</code> solution 1</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>LabProc <span class="sc">%&gt;%</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">separate_rows</span>(lab_proc, <span class="at">sep =</span> <span class="st">&quot;; &quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">separate</span>(<span class="at">col =</span> lab_proc,<span class="at">into =</span> <span class="fu">c</span>(<span class="st">&#39;lab&#39;</span>, <span class="st">&#39;value&#39;</span>, <span class="st">&#39;units&#39;</span>), </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">sep =</span> <span class="st">&quot; &quot;</span>, <span class="at">convert =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>     <span class="fu">unite</span>(<span class="at">col =</span> <span class="st">&quot;lab_name&quot;</span>, lab<span class="sc">:</span>units, <span class="at">sep =</span> <span class="st">&quot; &quot;</span>, <span class="at">remove =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["visit"],"name":[1],"type":["date"],"align":["right"]},{"label":["lab_name"],"name":[2],"type":["chr"],"align":["left"]},{"label":["lab"],"name":[3],"type":["chr"],"align":["left"]},{"label":["value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["units"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"2020-10-01","2":"Albumin 3.4 g/dL","3":"Albumin","4":"3.4","5":"g/dL"},{"1":"2020-10-01","2":"Potassium 3.8 mmol/L","3":"Potassium","4":"3.8","5":"mmol/L"},{"1":"2020-10-01","2":"A1c 4.8 %","3":"A1c","4":"4.8","5":"%"},{"1":"2020-10-10","2":"Albumin 41 g/dL","3":"Albumin","4":"41.0","5":"g/dL"},{"1":"2020-10-10","2":"A1c 5 %","3":"A1c","4":"5.0","5":"%"},{"1":"2020-10-20","2":"Albumin 4.8 g/dL","3":"Albumin","4":"4.8","5":"g/dL"},{"1":"2020-10-20","2":"Potassium 2.2 mmol/L","3":"Potassium","4":"2.2","5":"mmol/L"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
 </div>
-<div id="unite-exercise-2" class="section level3">
-<h3><code>unite</code> exercise 2</h3>
-</div>
-<div id="unite-solution-2" class="section level3">
-<h3><code>unite</code> solution 2</h3>
 </div>
 </div>
 <div id="unnest" class="section level2">
 <h2><code>unnest()</code></h2>
-<div id="unnest-exercise-1" class="section level3">
-<h3><code>unnest</code> exercise 1</h3>
+<p><code>unnest()</code> deals with nested data, which can be complicated to explain, so we’ll use an example.</p>
+<p>Run the code below to download data from the <a href="https://www.usada.org/news/sanctions/">Anti-Doping Agency Sanction database</a>.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;code/01-create-usada-data.R&quot;</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>UsadaBadDates</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["athlete"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sanction_announced"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sport"],"name":[3],"type":["chr"],"align":["left"]},{"label":["substance_reason"],"name":[4],"type":["chr"],"align":["left"]},{"label":["sanction_terms"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"fischbach, dylan","2":"original: 12/18/2015; updated: 04/11/2016","3":"paralympic basketball","4":"non-analytical: refusal to submit to sample collection","5":"2-year suspension - loss of results - additional results disqualified"},{"1":"trafeh, mohamed","2":"original: 12/18/2014; updated: 08/25/2015","3":"track and field","4":"non-analytical: use and possession (epo), and evading sample collection","5":"4-year suspension - loss of results"},{"1":"lea, robert","2":"original: 12/17/2015; updated: 02/25/2016","3":"cycling","4":"noroxycodone","5":"6-month suspension - loss of results"},{"1":"young, jerome","2":"original: 11/10/2004; updated: 06/17/2008","3":"track and field","4":"erythropoietin (epo) and non-analytical: use (epo & hgh)","5":"lifetime suspension - loss of results"},{"1":"hay, amy","2":"original: 10/31/2017; updated: 12/16/2019","3":"weightlifting","4":"ostarine","5":"2-year suspension; loss of results; sanction reduced; unretired - eligible to compete starting 07/25/2020"},{"1":"hunter, adam","2":"original: 10/28/2016; updated: 09/26/2018","3":"mixed martial arts","4":"tamoxifen; boldenone, methandienone, drostanolone, and clenbuterol","5":"2-year suspension - loss of results - additional loss of results"},{"1":"tovar, oscar","2":"original: 10/28/2015; updated: 10/04/2016","3":"cycling","4":"androgenic anabolic steroid","5":"2-year suspension - loss of results - additional results disqualified"},{"1":"dotti, juan pablo","2":"original: 10/20/2011; updated: 06/05/2013","3":"cycling","4":"androgenic anabolic steroid & amphetamine","5":"2-year suspension - loss of results; \\n2-year suspension restarted - loss of results"},{"1":"murdock, vince","2":"original: 09/05/2019; updated: 08/26/2020","3":"mixed martial arts","4":"gw1516","5":"20-month suspension - sanction reduced"},{"1":"thomas, tammy","2":"original: 08/30/2002; updated: 02/13/2017","3":"cycling","4":"norbolethone","5":"lifetime ban - loss of results - sanction reduced"},{"1":"orbon, joane","2":"original: 08/12/2019; updated: 09/10/2019","3":"karate","4":"lgd-4033","5":"9-month suspension; loss of results"},{"1":"bailey, ryan","2":"original: 08/03/2017; updated: 12/01/2017","3":"bobsled and skeleton, track and field","4":"1,3-dimethylbutylamine (dmba)","5":"2-year suspension with 161 day credit - loss of results"},{"1":"garcia del moral, luis","2":"original: 07/10/2012;updated: 10/26/2018","3":"cycling - athlete support personnel","4":"non-analytical","5":"5-year suspension"},{"1":"jones, stirley","2":"original: 06/17/2019; updated: 12/16/2019","3":"paralympic track and field","4":"stanozolol","5":"4-year suspension; loss of results"},{"1":"miyao, paulo","2":"original: 05/10/2017;updated: 11/27/2018","3":"brazilian jiu-jitsu","4":"clomiphene","5":"2-year suspension - loss of results; additional 3 months of suspension - loss of results"},{"1":"moffett, shaun","2":"original: 04/24/2018updated: 10/19/2018","3":"cycling","4":"testosterone and clomiphene","5":"21-month suspension - loss of results; additional 3 months of suspension - loss of results"},{"1":"bruyneel, johan","2":"original: 04/22/2014;updated: 10/24/2018","3":"cycling - athlete support personnel","4":"non-analytical: administration and trafficking","5":"lifetime suspension"},{"1":"celaya lazama, pedro","2":"original: 04/22/2014;updated: 10/24/2018","3":"cycling - athlete support personnel","4":"non-analytical","5":"lifetime suspension"},{"1":"marti, jose","2":"original: 04/22/2014;updated: 10/24/2018","3":"cycling - athlete support personnel","4":"non-analytical","5":"15-year suspension"},{"1":"oliveira, flavia","2":"original: 04/13/2010; updated 12/10/2010","3":"cycling","4":"oxilofrine","5":"18-month suspension - loss of results"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div id="str_split" class="section level3">
+<h3><code>str_split</code></h3>
+<p>The data have two dates (<code>original</code> and <code>updated</code>) in a single column (<code>sanction_announced</code>). <strong>We only want <code>updated</code> dates in their own columns.</strong></p>
+<p>Use the <code>stringr</code> package to split the bad dates on the <code>&quot;updated&quot;</code> pattern.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>UsadaBadDates <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sanction_dates =</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1) split this on the &quot;updated&quot; pattern</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>             stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="at">string =</span> sanction_announced, </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">pattern =</span> <span class="st">&quot;updated&quot;</span>))</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["athlete"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sanction_announced"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sport"],"name":[3],"type":["chr"],"align":["left"]},{"label":["substance_reason"],"name":[4],"type":["chr"],"align":["left"]},{"label":["sanction_terms"],"name":[5],"type":["chr"],"align":["left"]},{"label":["sanction_dates"],"name":[6],"type":["list"],"align":["right"]}],"data":[{"1":"fischbach, dylan","2":"original: 12/18/2015; updated: 04/11/2016","3":"paralympic basketball","4":"non-analytical: refusal to submit to sample collection","5":"2-year suspension - loss of results - additional results disqualified","6":"<chr [2]>"},{"1":"trafeh, mohamed","2":"original: 12/18/2014; updated: 08/25/2015","3":"track and field","4":"non-analytical: use and possession (epo), and evading sample collection","5":"4-year suspension - loss of results","6":"<chr [2]>"},{"1":"lea, robert","2":"original: 12/17/2015; updated: 02/25/2016","3":"cycling","4":"noroxycodone","5":"6-month suspension - loss of results","6":"<chr [2]>"},{"1":"young, jerome","2":"original: 11/10/2004; updated: 06/17/2008","3":"track and field","4":"erythropoietin (epo) and non-analytical: use (epo & hgh)","5":"lifetime suspension - loss of results","6":"<chr [2]>"},{"1":"hay, amy","2":"original: 10/31/2017; updated: 12/16/2019","3":"weightlifting","4":"ostarine","5":"2-year suspension; loss of results; sanction reduced; unretired - eligible to compete starting 07/25/2020","6":"<chr [2]>"},{"1":"hunter, adam","2":"original: 10/28/2016; updated: 09/26/2018","3":"mixed martial arts","4":"tamoxifen; boldenone, methandienone, drostanolone, and clenbuterol","5":"2-year suspension - loss of results - additional loss of results","6":"<chr [2]>"},{"1":"tovar, oscar","2":"original: 10/28/2015; updated: 10/04/2016","3":"cycling","4":"androgenic anabolic steroid","5":"2-year suspension - loss of results - additional results disqualified","6":"<chr [2]>"},{"1":"dotti, juan pablo","2":"original: 10/20/2011; updated: 06/05/2013","3":"cycling","4":"androgenic anabolic steroid & amphetamine","5":"2-year suspension - loss of results; \\n2-year suspension restarted - loss of results","6":"<chr [2]>"},{"1":"murdock, vince","2":"original: 09/05/2019; updated: 08/26/2020","3":"mixed martial arts","4":"gw1516","5":"20-month suspension - sanction reduced","6":"<chr [2]>"},{"1":"thomas, tammy","2":"original: 08/30/2002; updated: 02/13/2017","3":"cycling","4":"norbolethone","5":"lifetime ban - loss of results - sanction reduced","6":"<chr [2]>"},{"1":"orbon, joane","2":"original: 08/12/2019; updated: 09/10/2019","3":"karate","4":"lgd-4033","5":"9-month suspension; loss of results","6":"<chr [2]>"},{"1":"bailey, ryan","2":"original: 08/03/2017; updated: 12/01/2017","3":"bobsled and skeleton, track and field","4":"1,3-dimethylbutylamine (dmba)","5":"2-year suspension with 161 day credit - loss of results","6":"<chr [2]>"},{"1":"garcia del moral, luis","2":"original: 07/10/2012;updated: 10/26/2018","3":"cycling - athlete support personnel","4":"non-analytical","5":"5-year suspension","6":"<chr [2]>"},{"1":"jones, stirley","2":"original: 06/17/2019; updated: 12/16/2019","3":"paralympic track and field","4":"stanozolol","5":"4-year suspension; loss of results","6":"<chr [2]>"},{"1":"miyao, paulo","2":"original: 05/10/2017;updated: 11/27/2018","3":"brazilian jiu-jitsu","4":"clomiphene","5":"2-year suspension - loss of results; additional 3 months of suspension - loss of results","6":"<chr [2]>"},{"1":"moffett, shaun","2":"original: 04/24/2018updated: 10/19/2018","3":"cycling","4":"testosterone and clomiphene","5":"21-month suspension - loss of results; additional 3 months of suspension - loss of results","6":"<chr [2]>"},{"1":"bruyneel, johan","2":"original: 04/22/2014;updated: 10/24/2018","3":"cycling - athlete support personnel","4":"non-analytical: administration and trafficking","5":"lifetime suspension","6":"<chr [2]>"},{"1":"celaya lazama, pedro","2":"original: 04/22/2014;updated: 10/24/2018","3":"cycling - athlete support personnel","4":"non-analytical","5":"lifetime suspension","6":"<chr [2]>"},{"1":"marti, jose","2":"original: 04/22/2014;updated: 10/24/2018","3":"cycling - athlete support personnel","4":"non-analytical","5":"15-year suspension","6":"<chr [2]>"},{"1":"oliveira, flavia","2":"original: 04/13/2010; updated 12/10/2010","3":"cycling","4":"oxilofrine","5":"18-month suspension - loss of results","6":"<chr [2]>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>This creates a nested column (<code>sanction_dates</code>), which we can deal with by <code>unnest()</code>ing it.</p>
+</div>
+<div id="unnest-1" class="section level3">
+<h3><code>unnest()</code></h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>UsadaBadDates <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sanction_dates =</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1) split this on the &quot;updated&quot; pattern</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>             stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="at">string =</span> sanction_announced, </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">pattern =</span> <span class="st">&quot;updated&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># convert the output from split into multiple rows</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        tidyr<span class="sc">::</span><span class="fu">unnest</span>(sanction_dates) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># check this to see what is happening </span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(athlete, sanction_announced, sanction_dates)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["athlete"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sanction_announced"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sanction_dates"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"fischbach, dylan","2":"original: 12/18/2015; updated: 04/11/2016","3":"original: 12/18/2015;"},{"1":"fischbach, dylan","2":"original: 12/18/2015; updated: 04/11/2016","3":": 04/11/2016"},{"1":"trafeh, mohamed","2":"original: 12/18/2014; updated: 08/25/2015","3":"original: 12/18/2014;"},{"1":"trafeh, mohamed","2":"original: 12/18/2014; updated: 08/25/2015","3":": 08/25/2015"},{"1":"lea, robert","2":"original: 12/17/2015; updated: 02/25/2016","3":"original: 12/17/2015;"},{"1":"lea, robert","2":"original: 12/17/2015; updated: 02/25/2016","3":": 02/25/2016"},{"1":"young, jerome","2":"original: 11/10/2004; updated: 06/17/2008","3":"original: 11/10/2004;"},{"1":"young, jerome","2":"original: 11/10/2004; updated: 06/17/2008","3":": 06/17/2008"},{"1":"hay, amy","2":"original: 10/31/2017; updated: 12/16/2019","3":"original: 10/31/2017;"},{"1":"hay, amy","2":"original: 10/31/2017; updated: 12/16/2019","3":": 12/16/2019"},{"1":"hunter, adam","2":"original: 10/28/2016; updated: 09/26/2018","3":"original: 10/28/2016;"},{"1":"hunter, adam","2":"original: 10/28/2016; updated: 09/26/2018","3":": 09/26/2018"},{"1":"tovar, oscar","2":"original: 10/28/2015; updated: 10/04/2016","3":"original: 10/28/2015;"},{"1":"tovar, oscar","2":"original: 10/28/2015; updated: 10/04/2016","3":": 10/04/2016"},{"1":"dotti, juan pablo","2":"original: 10/20/2011; updated: 06/05/2013","3":"original: 10/20/2011;"},{"1":"dotti, juan pablo","2":"original: 10/20/2011; updated: 06/05/2013","3":": 06/05/2013"},{"1":"murdock, vince","2":"original: 09/05/2019; updated: 08/26/2020","3":"original: 09/05/2019;"},{"1":"murdock, vince","2":"original: 09/05/2019; updated: 08/26/2020","3":": 08/26/2020"},{"1":"thomas, tammy","2":"original: 08/30/2002; updated: 02/13/2017","3":"original: 08/30/2002;"},{"1":"thomas, tammy","2":"original: 08/30/2002; updated: 02/13/2017","3":": 02/13/2017"},{"1":"orbon, joane","2":"original: 08/12/2019; updated: 09/10/2019","3":"original: 08/12/2019;"},{"1":"orbon, joane","2":"original: 08/12/2019; updated: 09/10/2019","3":": 09/10/2019"},{"1":"bailey, ryan","2":"original: 08/03/2017; updated: 12/01/2017","3":"original: 08/03/2017;"},{"1":"bailey, ryan","2":"original: 08/03/2017; updated: 12/01/2017","3":": 12/01/2017"},{"1":"garcia del moral, luis","2":"original: 07/10/2012;updated: 10/26/2018","3":"original: 07/10/2012;"},{"1":"garcia del moral, luis","2":"original: 07/10/2012;updated: 10/26/2018","3":": 10/26/2018"},{"1":"jones, stirley","2":"original: 06/17/2019; updated: 12/16/2019","3":"original: 06/17/2019;"},{"1":"jones, stirley","2":"original: 06/17/2019; updated: 12/16/2019","3":": 12/16/2019"},{"1":"miyao, paulo","2":"original: 05/10/2017;updated: 11/27/2018","3":"original: 05/10/2017;"},{"1":"miyao, paulo","2":"original: 05/10/2017;updated: 11/27/2018","3":": 11/27/2018"},{"1":"moffett, shaun","2":"original: 04/24/2018updated: 10/19/2018","3":"original: 04/24/2018"},{"1":"moffett, shaun","2":"original: 04/24/2018updated: 10/19/2018","3":": 10/19/2018"},{"1":"bruyneel, johan","2":"original: 04/22/2014;updated: 10/24/2018","3":"original: 04/22/2014;"},{"1":"bruyneel, johan","2":"original: 04/22/2014;updated: 10/24/2018","3":": 10/24/2018"},{"1":"celaya lazama, pedro","2":"original: 04/22/2014;updated: 10/24/2018","3":"original: 04/22/2014;"},{"1":"celaya lazama, pedro","2":"original: 04/22/2014;updated: 10/24/2018","3":": 10/24/2018"},{"1":"marti, jose","2":"original: 04/22/2014;updated: 10/24/2018","3":"original: 04/22/2014;"},{"1":"marti, jose","2":"original: 04/22/2014;updated: 10/24/2018","3":": 10/24/2018"},{"1":"oliveira, flavia","2":"original: 04/13/2010; updated 12/10/2010","3":"original: 04/13/2010;"},{"1":"oliveira, flavia","2":"original: 04/13/2010; updated 12/10/2010","3":"12/10/2010"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 <div id="unnest-solution-1" class="section level3">
 <h3><code>unnest</code> solution 1</h3>
+<p>We can see all of the updated dates are on a new line, and the original dates still contain the text. Now I can filter out the rows with an original date (because I am only interested in the updated dates).</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>UsadaBadDates <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sanction_dates =</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1) split this on the &quot;updated&quot; pattern</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>             stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="at">string =</span> sanction_announced, </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">pattern =</span> <span class="st">&quot;updated&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2) convert the output from split into multiple rows</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        tidyr<span class="sc">::</span><span class="fu">unnest</span>(sanction_dates) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3) remove the &quot;original&quot; dates </span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(<span class="at">string =</span> sanction_dates, </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">pattern =</span> <span class="st">&quot;original&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># check this to see what is happening </span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(athlete, sanction_announced, sanction_dates)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["athlete"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sanction_announced"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sanction_dates"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"fischbach, dylan","2":"original: 12/18/2015; updated: 04/11/2016","3":": 04/11/2016"},{"1":"trafeh, mohamed","2":"original: 12/18/2014; updated: 08/25/2015","3":": 08/25/2015"},{"1":"lea, robert","2":"original: 12/17/2015; updated: 02/25/2016","3":": 02/25/2016"},{"1":"young, jerome","2":"original: 11/10/2004; updated: 06/17/2008","3":": 06/17/2008"},{"1":"hay, amy","2":"original: 10/31/2017; updated: 12/16/2019","3":": 12/16/2019"},{"1":"hunter, adam","2":"original: 10/28/2016; updated: 09/26/2018","3":": 09/26/2018"},{"1":"tovar, oscar","2":"original: 10/28/2015; updated: 10/04/2016","3":": 10/04/2016"},{"1":"dotti, juan pablo","2":"original: 10/20/2011; updated: 06/05/2013","3":": 06/05/2013"},{"1":"murdock, vince","2":"original: 09/05/2019; updated: 08/26/2020","3":": 08/26/2020"},{"1":"thomas, tammy","2":"original: 08/30/2002; updated: 02/13/2017","3":": 02/13/2017"},{"1":"orbon, joane","2":"original: 08/12/2019; updated: 09/10/2019","3":": 09/10/2019"},{"1":"bailey, ryan","2":"original: 08/03/2017; updated: 12/01/2017","3":": 12/01/2017"},{"1":"garcia del moral, luis","2":"original: 07/10/2012;updated: 10/26/2018","3":": 10/26/2018"},{"1":"jones, stirley","2":"original: 06/17/2019; updated: 12/16/2019","3":": 12/16/2019"},{"1":"miyao, paulo","2":"original: 05/10/2017;updated: 11/27/2018","3":": 11/27/2018"},{"1":"moffett, shaun","2":"original: 04/24/2018updated: 10/19/2018","3":": 10/19/2018"},{"1":"bruyneel, johan","2":"original: 04/22/2014;updated: 10/24/2018","3":": 10/24/2018"},{"1":"celaya lazama, pedro","2":"original: 04/22/2014;updated: 10/24/2018","3":": 10/24/2018"},{"1":"marti, jose","2":"original: 04/22/2014;updated: 10/24/2018","3":": 10/24/2018"},{"1":"oliveira, flavia","2":"original: 04/13/2010; updated 12/10/2010","3":"12/10/2010"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
 </div>
-<div id="unnest-exercise-2" class="section level3">
-<h3><code>unnest</code> exercise 2</h3>
 </div>
-<div id="unnest-solution-2" class="section level3">
-<h3><code>unnest</code> solution 2</h3>
+<div id="str_remove_all" class="section level3">
+<h3><code>str_remove_all()</code></h3>
+<p>Now I can clean up the updated <code>sanction_dates</code> and format it.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>UsadaBadDates <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sanction_dates =</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1) split this on the &quot;updated&quot; pattern</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>             stringr<span class="sc">::</span><span class="fu">str_split</span>(<span class="at">string =</span> sanction_announced, </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">pattern =</span> <span class="st">&quot;updated&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2) convert the output from split into multiple rows</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>        tidyr<span class="sc">::</span><span class="fu">unnest</span>(sanction_dates) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3) remove the &quot;original&quot; dates </span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">str_detect</span>(<span class="at">string =</span> sanction_dates, </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">pattern =</span> <span class="st">&quot;original&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4) remove the colon from sanction_dates</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">sanction_dates =</span> stringr<span class="sc">::</span><span class="fu">str_remove_all</span>(</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">string =</span> sanction_dates,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">pattern =</span> <span class="st">&quot;:&quot;</span>),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>                      <span class="co"># 5) remove any whitespace</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">sanction_dates =</span> stringr<span class="sc">::</span><span class="fu">str_trim</span>(sanction_dates),</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>                      <span class="co"># 6) format as date</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>                      <span class="at">sanction_dates =</span> lubridate<span class="sc">::</span><span class="fu">mdy</span>(sanction_dates)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># check this to see what is happening </span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(athlete, sanction_announced, sanction_dates)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["athlete"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sanction_announced"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sanction_dates"],"name":[3],"type":["date"],"align":["right"]}],"data":[{"1":"fischbach, dylan","2":"original: 12/18/2015; updated: 04/11/2016","3":"2016-04-11"},{"1":"trafeh, mohamed","2":"original: 12/18/2014; updated: 08/25/2015","3":"2015-08-25"},{"1":"lea, robert","2":"original: 12/17/2015; updated: 02/25/2016","3":"2016-02-25"},{"1":"young, jerome","2":"original: 11/10/2004; updated: 06/17/2008","3":"2008-06-17"},{"1":"hay, amy","2":"original: 10/31/2017; updated: 12/16/2019","3":"2019-12-16"},{"1":"hunter, adam","2":"original: 10/28/2016; updated: 09/26/2018","3":"2018-09-26"},{"1":"tovar, oscar","2":"original: 10/28/2015; updated: 10/04/2016","3":"2016-10-04"},{"1":"dotti, juan pablo","2":"original: 10/20/2011; updated: 06/05/2013","3":"2013-06-05"},{"1":"murdock, vince","2":"original: 09/05/2019; updated: 08/26/2020","3":"2020-08-26"},{"1":"thomas, tammy","2":"original: 08/30/2002; updated: 02/13/2017","3":"2017-02-13"},{"1":"orbon, joane","2":"original: 08/12/2019; updated: 09/10/2019","3":"2019-09-10"},{"1":"bailey, ryan","2":"original: 08/03/2017; updated: 12/01/2017","3":"2017-12-01"},{"1":"garcia del moral, luis","2":"original: 07/10/2012;updated: 10/26/2018","3":"2018-10-26"},{"1":"jones, stirley","2":"original: 06/17/2019; updated: 12/16/2019","3":"2019-12-16"},{"1":"miyao, paulo","2":"original: 05/10/2017;updated: 11/27/2018","3":"2018-11-27"},{"1":"moffett, shaun","2":"original: 04/24/2018updated: 10/19/2018","3":"2018-10-19"},{"1":"bruyneel, johan","2":"original: 04/22/2014;updated: 10/24/2018","3":"2018-10-24"},{"1":"celaya lazama, pedro","2":"original: 04/22/2014;updated: 10/24/2018","3":"2018-10-24"},{"1":"marti, jose","2":"original: 04/22/2014;updated: 10/24/2018","3":"2018-10-24"},{"1":"oliveira, flavia","2":"original: 04/13/2010; updated 12/10/2010","3":"2010-12-10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 </div>
 </div>
