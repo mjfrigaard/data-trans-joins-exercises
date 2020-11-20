@@ -1,8 +1,8 @@
 #=====================================================================#
 # This is code to create: 01-create-usada-data.R
-# Authored by and feedback to:
+# Authored by and feedback to: @mjfrigaard
 # MIT License
-# Version:
+# Version: 01
 #=====================================================================#
 
 
