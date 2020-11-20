@@ -3022,9 +3022,19 @@ div.tocify {
 <div id="manging-data" class="section level2 tabset">
 <h2 class="tabset">Manging data</h2>
 <p>We’re going to use some of the <code>fs</code> package functions for managing our files and data.</p>
+<div id="folder-trees-and-paths" class="section level3">
+<h3>Folder trees and paths</h3>
+<p>Check your files and folders with <code>dir_tree</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="st">&quot;..&quot;</span>)</span></code></pre></div>
+<pre><code>## ..
+## ├── data-trans-joins-exercises.Rproj
+## └── docs
+##     ├── Index.Rmd
+##     └── Index.html</code></pre>
+</div>
 <div id="create-folders" class="section level3">
 <h3>Create folders</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fs::dir_create(&quot;&quot;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_create</span>(<span class="st">&quot;data&quot;</span>)</span></code></pre></div>
 </div>
 <div id="folder-trees" class="section level3">
 <h3>Folder trees</h3>
@@ -3033,8 +3043,53 @@ div.tocify {
 <h3>File paths</h3>
 </div>
 </div>
-<div id="section" class="section level2">
-<h2></h2>
+<div id="separate" class="section level2 tabset">
+<h2 class="tabset"><code>separate()</code></h2>
+<div id="separate-exercise-1" class="section level3">
+<h3><code>separate</code> exercise 1</h3>
+</div>
+<div id="separate-solution-1" class="section level3">
+<h3><code>separate</code> solution 1</h3>
+</div>
+</div>
+<div id="separate_rows" class="section level2 tabset">
+<h2 class="tabset"><code>separate_rows</code></h2>
+<div id="separate_rows-exercise-1" class="section level3">
+<h3><code>separate_rows</code> exercise 1</h3>
+</div>
+<div id="separate_rows-solution-1" class="section level3">
+<h3><code>separate_rows</code> solution 1</h3>
+</div>
+</div>
+<div id="unite" class="section level2 tabset">
+<h2 class="tabset"><code>unite()</code></h2>
+<div id="unite-exercise-1" class="section level3">
+<h3><code>unite</code> exercise 1</h3>
+</div>
+<div id="unite-solution-1" class="section level3">
+<h3><code>unite</code> solution 1</h3>
+</div>
+<div id="unite-exercise-2" class="section level3">
+<h3><code>unite</code> exercise 2</h3>
+</div>
+<div id="unite-solution-2" class="section level3">
+<h3><code>unite</code> solution 2</h3>
+</div>
+</div>
+<div id="unnest" class="section level2">
+<h2><code>unnest()</code></h2>
+<div id="unnest-exercise-1" class="section level3">
+<h3><code>unnest</code> exercise 1</h3>
+</div>
+<div id="unnest-solution-1" class="section level3">
+<h3><code>unnest</code> solution 1</h3>
+</div>
+<div id="unnest-exercise-2" class="section level3">
+<h3><code>unnest</code> exercise 2</h3>
+</div>
+<div id="unnest-solution-2" class="section level3">
+<h3><code>unnest</code> solution 2</h3>
+</div>
 </div>
 </div>
 

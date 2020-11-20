@@ -47,15 +47,55 @@ library(tidyverse)
 
 We're going to use some of the `fs` package functions for managing our files and data. 
 
+### Folder trees and paths
+
+Check your files and folders with `dir_tree`: 
+
+```{r dir_tree}
+fs::dir_tree("..")
+```
+
+
 ### Create folders  
 
 ```{r fs-fir-info}
-# fs::dir_create("")
+fs::dir_create("data")
 ```
 
 ### Folder trees 
 
-
 ### File paths
 
-## 
+## `separate()`  {.tabset}
+
+### `separate` exercise 1
+
+### `separate` solution 1
+
+## `separate_rows`  {.tabset}
+
+### `separate_rows` exercise 1
+
+### `separate_rows` solution 1
+
+## `unite()` {.tabset} 
+
+### `unite` exercise 1
+
+### `unite` solution 1
+
+### `unite` exercise 2
+
+### `unite` solution 2
+
+## `unnest()` 
+
+### `unnest` exercise 1
+
+### `unnest` solution 1
+
+### `unnest` exercise 2
+
+### `unnest` solution 2
+
+
