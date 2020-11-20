@@ -27,6 +27,8 @@ This document outlines some common data reshaping tasks with `tidyr`. The slides
 
 There is also an accompanying RStudio.Cloud project: 
 
+https://rstudio.cloud/project/1941654
+
 Read more about `dplyr` [here](https://dplyr.tidyverse.org/index.html) and [`tidyr`](https://tidyr.tidyverse.org/) on the tidyverse website, or in the [Data Transformation](https://r4ds.had.co.nz/transform.html) chapter of R for Data Science. 
 
 ## Load packages 
